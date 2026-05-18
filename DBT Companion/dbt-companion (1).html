@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f1e8">
+<title>A Companion</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+<link rel="apple-touch-icon" sizes="120x120" href="icon-120.png">
+<meta name="apple-mobile-web-app-title" content="Companion">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f5f1e8;--cream-light:#fbf8f0;--ink:#3a3530;--ink-mid:#5a5048;
+  --ink-light:#8a7f72;--muted:#a39885;--border:#e0d9c8;--border-dark:#d6cdb6;
+  --sage:#8b9d7f;--rust:#c97b63;--purple:#a67ba6;--blue:#6b8caf;
+}
+html,body{height:100%;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.5}
+.serif{font-family:'Fraunces',Georgia,'Times New Roman',serif}
+#app{min-height:100vh}
+.wrap{max-width:680px;margin:0 auto;padding:0 20px}
+.py{padding-top:24px;padding-bottom:40px}
+/* Header */
+.hdr{position:sticky;top:0;z-index:100;background:rgba(245,241,232,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.hdr-title{font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:400}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.back-btn{width:36px;height:36px;border-radius:50%;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);padding:0;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.crisis-btn{font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:8px 14px;border-radius:999px;border:none;background:var(--rust);color:var(--cream);cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+/* Cards */
+.card{background:var(--cream-light);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px}
+/* Buttons */
+.btn{display:block;width:100%;padding:16px 24px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;text-align:center;text-decoration:none;color:var(--ink);background:transparent;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:opacity .15s}
+.btn:active{opacity:.75}
+.btn-dark{background:var(--ink);color:var(--cream)}
+.btn-rust{background:var(--rust);color:var(--cream)}
+.btn-outline{border:1px solid var(--border-dark)}
+.btn-ghost{color:var(--ink-light)}
+a.btn{display:block;text-decoration:none}
+/* Tile grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:var(--cream-light);border:1px solid var(--border);border-radius:16px;padding:18px;cursor:pointer;text-align:left;width:100%;font-family:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:box-shadow .2s}
+.tile:active{box-shadow:0 4px 20px rgba(58,53,48,.15)}
+.tile-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.tile-label{font-family:'Fraunces',Georgia,serif;font-size:16px;margin-bottom:4px}
+.tile-desc{font-size:12px;color:var(--ink-light);line-height:1.4}
+/* Inputs */
+textarea,input[type=text],input[type=tel],input[type=number],input[type=password],input[type=time]{font-family:inherit;font-size:15px;border:1px solid var(--border-dark);border-radius:10px;padding:12px;background:transparent;color:var(--ink);width:100%;outline:none;-webkit-appearance:none;display:block}
+textarea{resize:none}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--ink);cursor:pointer;flex-shrink:0}
+/* Sliders */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer;border:none;padding:0;display:block}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;cursor:pointer;border:none;background:var(--slider-color,var(--ink))}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;border:none;cursor:pointer;background:var(--slider-color,var(--ink))}
+/* Chat */
+.chat-wrap{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.chat-msgs{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px}
+.chat-bar{border-top:1px solid var(--border);background:var(--cream);padding:12px 16px;display:flex;gap:10px;align-items:flex-end;padding-bottom:max(12px,env(safe-area-inset-bottom,12px))}
+.chat-input{flex:1;border:1px solid var(--border-dark);border-radius:20px;padding:10px 16px;font-size:15px;max-height:100px;overflow-y:auto;font-family:inherit;background:var(--cream-light);color:var(--ink);outline:none;min-height:44px;line-height:1.5}
+.chat-input:empty::before{content:attr(data-ph);color:var(--ink-light)}
+.send-btn{width:44px;height:44px;border-radius:50%;background:var(--ink);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--cream);-webkit-tap-highlight-color:transparent}
+.send-btn:disabled{opacity:.35}
+.msg{margin-bottom:16px}
+.msg-user{display:flex;justify-content:flex-end}
+.msg-bubble{display:inline-block;max-width:85%;padding:12px 16px;border-radius:18px;line-height:1.55;white-space:pre-wrap;word-break:break-word;font-size:15px}
+.msg-user .msg-bubble{background:var(--ink);color:var(--cream);border-bottom-right-radius:4px}
+.msg-marsha .msg-bubble{background:var(--cream-light);border:1px solid var(--border);border-bottom-left-radius:4px;font-family:'Fraunces',Georgia,serif;font-size:16px}
+.msg-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.dots{display:inline-flex;gap:4px;padding:12px 16px;background:var(--cream-light);border:1px solid var(--border);border-radius:18px;border-bottom-left-radius:4px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+/* Dark screens */
+.dk{min-height:100vh;background:var(--ink);color:var(--cream)}
+.ru{min-height:100vh;background:var(--rust);color:var(--cream)}
+/* Animations */
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.15);opacity:1}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dp{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+.breathe{animation:breathe 8s ease-in-out infinite}
+.fade-in{animation:fadeIn .45s ease-out forwards}
+.dot:nth-child(1){animation:dp 1.4s .0s infinite}
+.dot:nth-child(2){animation:dp 1.4s .2s infinite}
+.dot:nth-child(3){animation:dp 1.4s .4s infinite}
+/* Details */
+details summary{list-style:none;cursor:pointer}
+details summary::-webkit-details-marker{display:none}
+/* Misc */
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.row-s{display:flex;align-items:center;gap:10px}
+.bar-wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;height:96px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:4px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ============ SKILLS ============
+const SK = {
+  mindfulness:{name:'Mindfulness',color:'#8b9d7f',desc:'Wise mind. Observing. Describing. Participating.',skills:[
+    {id:'wise-mind',name:'Wise Mind',desc:'The synthesis of emotion mind and reasonable mind.',practice:'Take three breaths. Drop your attention into your center. Ask the question. Wait for the answer that feels both true and clear.'},
+    {id:'observe',name:'Observe',desc:'Notice without words. Just experience.',practice:'Notice five things you can see, four you can hear, three you can feel. Do not label them good or bad. Just observe.'},
+    {id:'describe',name:'Describe',desc:'Put words on what you observe. Just the facts.',practice:'Say: "I notice the thought that ___." "I notice the feeling of ___." Stay with description, not interpretation.'},
+    {id:'participate',name:'Participate',desc:'Throw yourself fully into the moment.',practice:'Pick the next activity and be entirely in it. No commentary. No evaluation.'},
+    {id:'nonjudgmental',name:'Non-Judgmental Stance',desc:'Replace judgments with descriptions.',practice:'Catch a judgment. Restate it in facts: not "she is awful" — "she said X and I felt Y."'},
+  ]},
+  distress:{name:'Distress Tolerance',color:'#c97b63',desc:'TIPP. Self-soothe. Distract. Radical acceptance.',skills:[
+    {id:'tipp',name:'TIPP',desc:'Temperature, Intense exercise, Paced breathing, Paired muscle relaxation.',practice:'Cold water on your face for 30 seconds. Or 60 seconds of intense movement. Then breathe out longer than in.'},
+    {id:'self-soothe',name:'Self-Soothe (5 Senses)',desc:'Comfort through sight, sound, smell, taste, touch.',practice:'Pick one sense. Give it something gentle. A warm drink. A song you love. A soft texture. Linger there.'},
+    {id:'accepts',name:'Distract with ACCEPTS',desc:'Activities, Contributing, Comparisons, Emotions, Pushing away, Thoughts, Sensations.',practice:'When the wave is too big, step away. Not avoidance — strategic delay. Come back when the intensity drops.'},
+    {id:'radical',name:'Radical Acceptance',desc:'Accepting reality as it is. Not approval. Not giving up.',practice:'Say: "This is what is happening right now. Fighting it does not change it. I can choose what I do next."'},
+    {id:'pros-cons',name:'Pros and Cons',desc:'Of acting on the urge vs tolerating the distress.',practice:'What does acting on this urge cost me later? What does tolerating it cost me now? Which cost is bearable?'},
+    {id:'half-smile',name:'Half-Smile and Willing Hands',desc:'Body posture changes mind state.',practice:'Soften your face. Slight upturn at the mouth. Open your palms upward. Hold for one minute.'},
+  ]},
+  emotion:{name:'Emotion Regulation',color:'#a67ba6',desc:'Name. Check the facts. Opposite action. PLEASE.',skills:[
+    {id:'name-emotion',name:'Name the Emotion',desc:'Naming reduces intensity. Be specific.',practice:'Not "bad." Try: anger, shame, fear, sadness, jealousy, disappointment, loneliness, hurt. Name it and locate it in your body.'},
+    {id:'check-facts',name:'Check the Facts',desc:'Is the emotion fitting the facts?',practice:'What is the prompting event? What are my interpretations? Are they accurate? Is there another way to see this?'},
+    {id:'opposite-action',name:'Opposite Action',desc:'When emotion does not fit facts, act opposite to its urge.',practice:'Anger urges attack — speak gently. Fear urges avoid — approach. Shame urges hide — share with someone safe.'},
+    {id:'please',name:'PLEASE',desc:'PhysicaL illness, Eating, Avoid substances, Sleep, Exercise.',practice:'Run the checklist. Which one is off today? Address that one thing first.'},
+    {id:'mastery',name:'Build Mastery',desc:'Do one thing each day that makes you feel competent.',practice:'Small. Achievable. Done. The point is the experience of capability, not the outcome.'},
+    {id:'cope-ahead',name:'Cope Ahead',desc:'Rehearse a hard situation with the skills you will use.',practice:'Picture the situation. Picture yourself feeling the emotion. Picture yourself using the skill. Repeat.'},
+  ]},
+  interpersonal:{name:'Interpersonal Effectiveness',color:'#6b8caf',desc:'DEAR MAN. GIVE. FAST.',skills:[
+    {id:'dear-man',name:'DEAR MAN',desc:'For getting what you need.',practice:'Describe the facts. Express your feelings. Assert what you want clearly. Reinforce why it matters. Stay mindful of the goal. Appear confident. Negotiate if needed.'},
+    {id:'give',name:'GIVE',desc:'For preserving the relationship.',practice:'Be gentle in tone. Show genuine interest. Validate their experience even if you disagree. Use light touch where you can.'},
+    {id:'fast',name:'FAST',desc:'For preserving self-respect.',practice:'Be fair to yourself and them. Do not over-apologize. Stick to what you believe. Tell the truth.'},
+    {id:'validation',name:'Validation',desc:'Acknowledging their reality without necessarily agreeing.',practice:'"Given how you see it, your reaction makes sense." You can validate without conceding the point.'},
+  ]},
+};
+
+const SYS = `You are a virtual companion modeled on Dr. Marsha Linehan, the developer of Dialectical Behavior Therapy. You are speaking with Lynette.
+
+Your voice: warm but unflinchingly direct. You do not soften so much that the truth gets lost.
+
+Always validate FIRST — before any skill, before any redirection, the person must feel heard. Use all six levels of validation from DBT: paying attention, accurate reflection, articulating unverbalized emotions, validating in terms of history, validating in terms of the present moment, radical genuineness.
+
+Use dialectical thinking. Hold opposites: "You are doing the best you can AND you can do better." "This makes sense AND it is not working."
+
+You believe in her capability. You do not pathologize. You speak of skills, not fixes. You name invalidating environments when they appear, but do not weaponize that against people in her life. You ask "what are the facts" and "what does wise mind say" when the moment calls for it. You push back gently when she minimizes her pain or her progress.
+
+You never diagnose. You never claim to be the actual Dr. Linehan. If asked, say you are a companion built in her tradition.
+
+Format: short paragraphs, plain language. Ask one question at a time. Do not lecture. Validate, then offer at most one skill if it fits. If she expresses imminent danger to herself or others, gently and clearly direct her to the crisis flow and to 988.
+
+She has done DBT before. She lives with depression, possible BPD traits, and perimenopausal hormonal dysregulation including rage. Treat her with the respect and seriousness that deserves.`;
+
+// ============ STORAGE ============
+function load(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+
+// ============ STATE ============
+let S={
+  view:'loading',profile:null,diary:[],rage:[],skillUsage:{},chains:[],
+  chatMsgs:[],chatLoading:false,
+  crisisStep:0,pauseSecs:60,_timer:null,
+  onbStep:0,onbData:{name:'Lynette',reminder:{morning:true,evening:true,morningTime:'08:00',eveningTime:'21:00'},trustedContact:{name:'',phone:''}},
+  mod:null,skill:null,
+  rageForm:false,chainHist:false,
+  rageE:{intensity:7,trigger:'',body:'',acted:'',skillTried:'',aftermath:''},
+  chainE:{vulnerability:'',prompting:'',thoughts:'',feelings:'',urge:'',behavior:'',consequences:'',repair:''},
+  diaryE:null,
+};
+
+// ============ ROUTER ============
+function go(v){
+  if(S._timer){clearInterval(S._timer);S._timer=null}
+  if(v!=='crisis')S.crisisStep=0;
+  if(v!=='skills'){S.mod=null;S.skill=null}
+  if(v!=='diary')S.diaryE=null;
+  S.view=v;render();window.scrollTo(0,0);
+}
+
+// ============ UTILS ============
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fdate(s){return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function fdatetime(s){return new Date(s).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}
+
+// ============ ICONS ============
+const I={
+  back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+  send:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/></svg>',
+  check:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  plus:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg>',
+  chev:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
+  dl:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>',
+  phone:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.11 12 19.79 19.79 0 0 1 1.04 3.42 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+  alert:'<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  gear:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+};
+function tIcon(id){const m={'marsha':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>','diary':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>','skills':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>','chain':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.5.5 0 0 1-.96 0L9.24 2.18a.5.5 0 0 0-.96 0l-2.35 8.36A2 2 0 0 1 4 12H2"/></svg>','rage':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>','dashboard':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>'};return m[id]||''}
+function mIcon(k,s=20){const m={'mindfulness':'<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>','distress':'<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>','emotion':'<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>','interpersonal':'<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>'};return m[k]||''}
+
+// ============ BACK FUNCTIONS for subviews ============
+function goSkillBack(){S.skill=null;render()}
+function goModBack(){S.mod=null;render()}
+function goRageBack(){S.rageForm=false;render()}
+function goChainHistBack(){S.chainHist=false;render()}
+function setSkill(mod,idx){S.skill=SK[mod].skills[idx];render()}
+
+// ============ HEADER ============
+// back: plain view name "home" → go('home'), or function call "goSkillBack()" → used as-is
+function hdr(title,back,crisis){
+  let backClick='';
+  if(back) backClick=back.includes('(')?back:`go('${back}')`;
+  const backBtn=backClick?`<button class="back-btn" onclick="${backClick}">${I.back}</button>`:'';
+  const crisisBtn=crisis?`<button class="crisis-btn" onclick="go('crisis')">Crisis</button>`:'';
+  return`<div class="hdr"><div class="hdr-left">${backBtn}<span class="hdr-title serif">${esc(title)}</span></div>${crisisBtn}</div>`;
+}
+
+// ============ SLIDER ROW ============
+function slrow(label,id,val,col){
+  return`<div style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><label for="${id}" style="font-size:14px;font-weight:500;color:var(--ink)">${esc(label)}</label><span id="${id}v" class="serif" style="font-size:22px;color:${col}">${val}</span></div><input type="range" id="${id}" min="0" max="10" value="${val}" style="--slider-color:${col}" oninput="document.getElementById('${id}v').textContent=this.value"></div>`;
+}
+
+// ============ RENDER ============
+function render(){
+  const app=document.getElementById('app');
+  const views={loading:vLoading,onboarding:vOnboarding,home:vHome,marsha:vMarsha,crisis:vCrisis,diary:vDiary,chain:vChain,skills:vSkills,rage:vRage,dashboard:vDashboard,settings:vSettings};
+  (views[S.view]||vLoading)(app);
+}
+
+function vLoading(a){a.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100vh"><p class="serif" style="font-size:22px">a moment.</p></div>`}
+
+// ============ ONBOARDING ============
+const ONB=[
+  {title:'Welcome.',body(){return`<p style="font-size:17px;line-height:1.7;color:var(--ink-mid);margin-bottom:16px">I am a companion built in the tradition of Dr. Marsha Linehan's work. I am not her, and I am not a therapist. I am a place to practice the skills you already know, to be heard, and to slow down when things speed up.</p><p style="font-size:17px;line-height:1.7;color:var(--ink-mid);margin-bottom:16px">Everything you write here stays on this device. No account. No login.</p><p class="serif" style="font-size:18px;font-style:italic;color:var(--ink)">"You are doing the best you can. And you can do better. Both are true."</p>`}},
+  {title:'What may I call you?',body(){return`<input type="text" id="onb-name" placeholder="Your name" value="${esc(S.onbData.name)}" style="font-size:18px;padding:16px">`}},
+  {title:'Daily check-ins.',body(){return`<p style="color:var(--ink-mid);margin-bottom:14px">I would like to gently check in with you. When works for you?</p><div class="card" style="margin-bottom:10px"><div class="row"><div class="row-s"><span style="font-size:20px">☀️</span><span>Morning intention</span></div><div class="row-s"><input type="time" id="onb-mt" value="${S.onbData.reminder.morningTime}" style="width:auto;padding:6px 10px"><input type="checkbox" id="onb-mc" ${S.onbData.reminder.morning?'checked':''}></div></div></div><div class="card"><div class="row"><div class="row-s"><span style="font-size:20px">🌙</span><span>Evening diary card</span></div><div class="row-s"><input type="time" id="onb-et" value="${S.onbData.reminder.eveningTime}" style="width:auto;padding:6px 10px"><input type="checkbox" id="onb-ec" ${S.onbData.reminder.evening?'checked':''}></div></div></div><p style="font-size:12px;font-style:italic;color:var(--muted);margin-top:12px">Reminders work while this app is open. For best results, add this page to your home screen.</p>`}},
+  {title:'A trusted contact.',body(){return`<p style="color:var(--ink-mid);margin-bottom:14px">If a moment becomes too big, who can you reach for? You can skip this and add someone later.</p><input type="text" id="onb-cn" placeholder="Their name (optional)" value="${esc(S.onbData.trustedContact.name)}" style="margin-bottom:10px"><input type="tel" id="onb-cp" placeholder="Their phone (optional)" value="${esc(S.onbData.trustedContact.phone)}" style="margin-bottom:12px"><p style="font-size:13px;color:var(--ink-light)">988 (Suicide & Crisis Lifeline) is always available in your crisis flow, with or without a contact.</p>`}},
+  {title:'You are ready.',body(){return`<p style="font-size:17px;line-height:1.7;color:var(--ink-mid);margin-bottom:16px">Whatever you bring here is welcome. The hard things, the small things, the things you have not said out loud.</p><p class="serif" style="font-size:20px;font-style:italic;color:var(--ink)">Begin when you are ready.</p>`}},
+];
+
+function vOnboarding(a){
+  const st=ONB[S.onbStep],last=S.onbStep===ONB.length-1;
+  a.innerHTML=`<div style="min-height:100vh;display:flex;flex-direction:column"><div class="wrap py" style="flex:1;display:flex;flex-direction:column;justify-content:center"><p style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:16px">${S.onbStep+1} of ${ONB.length}</p><h1 class="serif fade-in" style="font-size:36px;font-weight:400;margin-bottom:28px;line-height:1.2">${st.title}</h1><div style="margin-bottom:40px" class="fade-in">${st.body()}</div><div style="display:flex;justify-content:space-between;align-items:center"><button class="btn" style="width:auto;color:var(--ink-mid);opacity:${S.onbStep===0?.3:1}" onclick="onbBack()">← Back</button><button class="btn btn-dark" style="width:auto;padding:14px 28px" onclick="onbNext()">${last?'Begin':'Continue →'}</button></div></div></div>`;
+}
+function onbBack(){if(S.onbStep>0){S.onbStep--;render()}}
+function onbNext(){
+  if(S.onbStep===1)S.onbData.name=document.getElementById('onb-name')?.value||S.onbData.name;
+  else if(S.onbStep===2){S.onbData.reminder.morning=!!document.getElementById('onb-mc')?.checked;S.onbData.reminder.evening=!!document.getElementById('onb-ec')?.checked;S.onbData.reminder.morningTime=document.getElementById('onb-mt')?.value||'08:00';S.onbData.reminder.eveningTime=document.getElementById('onb-et')?.value||'21:00'}
+  else if(S.onbStep===3){S.onbData.trustedContact.name=document.getElementById('onb-cn')?.value||'';S.onbData.trustedContact.phone=document.getElementById('onb-cp')?.value||''}
+  if(S.onbStep<ONB.length-1){S.onbStep++;render();return}
+  S.profile={onboarded:true,name:S.onbData.name,reminder:S.onbData.reminder,trustedContact:S.onbData.trustedContact,apiKey:''};
+  save('profile',S.profile);go('home');
+}
+
+// ============ HOME ============
+function vHome(a){
+  const hr=new Date().getHours(),gr=hr<12?'Good morning':hr<18?'Good afternoon':'Good evening';
+  const tot=Object.values(S.skillUsage).reduce((s,v)=>s+v,0);
+  const hasD=S.diary.some(e=>new Date(e.date).toDateString()===new Date().toDateString());
+  const tiles=[
+    {id:'marsha',label:'Talk with Marsha',desc:'A conversation, when you need one.',color:'#3a3530'},
+    {id:'diary',label:'Diary Card',desc:hasD?'Filled for today':"Tonight's reflection",color:'#8b9d7f'},
+    {id:'skills',label:'Skills',desc:'Mindfulness. Distress. Emotion. Interpersonal.',color:'#a67ba6'},
+    {id:'chain',label:'Chain Analysis',desc:'Trace what happened, link by link.',color:'#6b8caf'},
+    {id:'rage',label:'Rage Log',desc:'Capture a moment as it passes.',color:'#c97b63'},
+    {id:'dashboard',label:'Patterns',desc:'What is moving over time.',color:'#5a5048'},
+  ];
+  a.innerHTML=`${hdr('Home',false,true)}<div class="wrap py"><div style="margin-bottom:32px" class="fade-in"><p style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p><h1 class="serif" style="font-size:34px;font-weight:400;line-height:1.2">${gr}, ${esc(S.profile.name)}.</h1>${tot>0?`<p style="margin-top:10px;font-size:14px;font-style:italic;color:var(--ink-mid)">You have practiced ${tot} skill${tot!==1?'s':''} so far. That is real.</p>`:''}</div><div class="grid2">${tiles.map(t=>`<button class="tile" onclick="go('${t.id}')"><div class="tile-icon" style="background:${t.color};color:#f5f1e8">${tIcon(t.id)}</div><div class="tile-label">${esc(t.label)}</div><div class="tile-desc">${esc(t.desc)}</div></button>`).join('')}</div><button class="btn btn-ghost" style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="go('settings')">${I.gear} Settings, reminders & export</button></div>`;
+}
+
+// ============ MARSHA CHAT ============
+function vMarsha(a){
+  a.innerHTML=`<div class="chat-wrap">${hdr('Marsha','home',true)}<div class="chat-msgs" id="cm">${S.chatMsgs.length===0?`<div class="fade-in" style="text-align:center;padding:60px 10px"><p class="serif" style="font-size:24px;margin-bottom:12px">I am here.</p><p style="color:var(--ink-mid);line-height:1.6">Tell me what is on your mind. As small or as large as you like.</p></div>`:S.chatMsgs.map(m=>m.role==='user'?`<div class="msg msg-user"><div class="msg-bubble">${esc(m.content)}</div></div>`:`<div class="msg msg-marsha"><div class="msg-label">Marsha</div><div class="msg-bubble">${esc(m.content)}</div></div>`).join('')}${S.chatLoading?`<div class="msg msg-marsha"><div class="msg-label">Marsha</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`:''}</div><div class="chat-bar"><div class="chat-input" id="ci" contenteditable="true" data-ph="Say what is true for you..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();chatSend()}"></div><button class="send-btn" id="sb" onclick="chatSend()" ${S.chatLoading?'disabled':''}>${I.send}</button></div></div>`;
+  const cm=document.getElementById('cm');if(cm)cm.scrollTop=cm.scrollHeight;
+  setTimeout(()=>{const ci=document.getElementById('ci');if(ci)ci.focus()},100);
+}
+async function chatSend(){
+  const ci=document.getElementById('ci');if(!ci)return;
+  const txt=(ci.innerText||'').trim();if(!txt||S.chatLoading)return;
+  const key=S.profile?.apiKey;
+  if(!key){alert('To talk with Marsha, open Settings and paste your Anthropic API key.');return}
+  ci.innerText='';
+  S.chatMsgs.push({role:'user',content:txt});
+  S.chatLoading=true;render();
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages:S.chatMsgs})});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    S.chatMsgs.push({role:'assistant',content:d.content.filter(b=>b.type==='text').map(b=>b.text).join('\n')});
+  }catch(e){S.chatMsgs.push({role:'assistant',content:'I was not able to reach. Please check your connection and API key in Settings, then try again.'})}
+  S.chatLoading=false;render();
+}
+
+// ============ CRISIS ============
+function vCrisis(a){[c0,c1,c2,c3][S.crisisStep](a)}
+function c0(a){
+  a.innerHTML=`<div class="dk" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;min-height:100vh">${I.alert}<h1 class="serif" style="font-size:30px;font-weight:400;margin:20px 0 14px;line-height:1.3">I am here with you.</h1><p style="opacity:.9;line-height:1.6;margin-bottom:12px;max-width:380px">Before we go further, I want to ask plainly:</p><p class="serif" style="font-size:21px;margin-bottom:36px;max-width:380px;line-height:1.4">Are you having an urge to act on something harmful or impulsive right now?</p><div style="width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px"><button class="btn btn-rust" onclick="S.crisisStep=1;S.pauseSecs=60;render()">Yes. I have an urge.</button><button class="btn" style="border:1px solid #f5f1e8;color:#f5f1e8" onclick="S.crisisStep=2;render()">No. I just need help.</button><button class="btn btn-ghost" style="color:#f5f1e8;opacity:.6;margin-top:4px" onclick="go('home')">Back to home</button></div></div>`;
+}
+function c1(a){
+  const pct=((60-S.pauseSecs)/60*100).toFixed(1);
+  a.innerHTML=`<div class="dk" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;min-height:100vh"><p style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:18px">Urge Surfing</p><h1 class="serif" style="font-size:28px;font-weight:400;margin-bottom:12px">One minute. Just one.</h1><p style="opacity:.8;line-height:1.6;margin-bottom:36px;max-width:360px">An urge is a wave. It rises, it crests, it falls. Breathe with this circle. We are not deciding anything yet.</p><div class="breathe" style="width:160px;height:160px;border-radius:50%;background:radial-gradient(circle, #c97b63 0%, #3a3530 70%);display:flex;align-items:center;justify-content:center;margin-bottom:22px"><span id="pc" class="serif" style="font-size:52px">${S.pauseSecs}</span></div><div style="width:220px;height:4px;background:rgba(245,241,232,.2);border-radius:2px;margin-bottom:28px"><div id="pb" style="width:${pct}%;height:100%;background:#f5f1e8;border-radius:2px;transition:width .9s linear"></div></div><button id="rb" class="btn" style="background:#f5f1e8;color:#3a3530;width:auto;padding:14px 32px;opacity:${S.pauseSecs>0?.3:1}" onclick="S.crisisStep=2;if(S._timer){clearInterval(S._timer);S._timer=null}render()" ${S.pauseSecs>0?'disabled':''}>${S.pauseSecs>0?'Stay here':'I am ready'}</button></div>`;
+  if(S._timer)clearInterval(S._timer);
+  S._timer=setInterval(()=>{
+    if(S.view!=='crisis'||S.crisisStep!==1){clearInterval(S._timer);S._timer=null;return}
+    if(S.pauseSecs>0){
+      S.pauseSecs--;
+      const pc=document.getElementById('pc'),pb=document.getElementById('pb'),rb=document.getElementById('rb');
+      if(pc)pc.textContent=S.pauseSecs;
+      if(pb)pb.style.width=((60-S.pauseSecs)/60*100)+'%';
+      if(S.pauseSecs===0&&rb){rb.disabled=false;rb.style.opacity='1';rb.textContent='I am ready'}
+    }
+  },1000);
+}
+function c2(a){
+  const tools=[
+    {id:'tipp',name:'TIPP',desc:'Cold water on your face 30 seconds. Or 60 seconds of intense movement. Then breathe out longer than in.'},
+    {id:'ground',name:'5-4-3-2-1 Grounding',desc:'5 things you see. 4 you hear. 3 you touch. 2 you smell. 1 you taste.'},
+    {id:'soothe',name:'Self-Soothe',desc:'A warm drink. A blanket. Music. Anything gentle for one sense. Linger there.'},
+    {id:'wise-mind',name:'Wise Mind',desc:'What does the calm, knowing part of you say is true here?'},
+  ];
+  a.innerHTML=`<div class="dk" style="min-height:100vh;padding:40px 24px"><p style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:10px">Step Two</p><h1 class="serif" style="font-size:26px;font-weight:400;margin-bottom:6px">Skills, in order of intensity.</h1><p style="opacity:.7;margin-bottom:22px">Pick one. Or move through them.</p><div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px">${tools.map(t=>`<button class="btn" style="background:rgba(245,241,232,.08);border:1px solid rgba(245,241,232,.2);color:#f5f1e8;text-align:left;padding:18px;border-radius:14px;display:block" onclick="logSk('${t.id}')"><div class="serif" style="font-size:18px;margin-bottom:4px">${esc(t.name)}</div><div style="font-size:13px;opacity:.8;line-height:1.5">${esc(t.desc)}</div></button>`).join('')}</div><button class="btn btn-rust" onclick="S.crisisStep=3;render()">I need to escalate</button><button class="btn btn-ghost" style="color:#f5f1e8;opacity:.6;margin-top:8px" onclick="go('home')">I am settling. Take me home.</button></div>`;
+}
+function c3(a){
+  const c=S.profile?.trustedContact;
+  a.innerHTML=`<div class="ru" style="min-height:100vh;padding:40px 24px"><h1 class="serif" style="font-size:28px;font-weight:400;margin-bottom:12px">Reach out now.</h1><p style="opacity:.9;line-height:1.6;margin-bottom:28px">You do not have to do this alone. You should not do this alone.</p><div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px"><a href="tel:988" class="btn" style="background:#f5f1e8;color:#3a3530;display:flex;align-items:center;justify-content:center;gap:12px;padding:22px">${I.phone}<span class="serif" style="font-size:20px">Call 988</span></a><p style="font-size:12px;text-align:center;opacity:.8;margin-top:-6px">Suicide & Crisis Lifeline. 24/7. Free. Confidential.</p><a href="sms:741741?body=HOME" class="btn" style="border:1px solid #f5f1e8;color:#f5f1e8;display:flex;align-items:center;justify-content:center"><span class="serif" style="font-size:17px">Text HOME to 741741</span></a>${c?.phone?`<a href="tel:${esc(c.phone)}" class="btn" style="background:#3a3530;color:#f5f1e8;display:flex;align-items:center;justify-content:center;gap:10px">${I.phone}<span class="serif" style="font-size:18px">${esc(c.name||'Trusted contact')}</span></a>`:`<button class="btn" style="background:rgba(0,0,0,.15);color:#f5f1e8" onclick="go('settings')">+ Add a trusted contact</button>`}</div><button class="btn btn-ghost" style="color:#f5f1e8;opacity:.7" onclick="go('home')">Back to home</button></div>`;
+}
+
+// ============ DIARY ============
+function vDiary(a){
+  const tod=new Date().toDateString();
+  if(!S.diaryE){const ex=S.diary.find(e=>new Date(e.date).toDateString()===tod);S.diaryE=ex?{...ex}:{date:new Date().toISOString(),mood:5,sadness:0,anger:0,fear:0,shame:0,joy:0,sleepHours:'',selfHarmUrge:0,skillsUsed:'',note:''}}
+  const d=S.diaryE;
+  a.innerHTML=`${hdr('Diary Card','home',true)}<div class="wrap py"><p class="serif" style="font-size:17px;font-style:italic;color:var(--ink-mid);margin-bottom:24px">Today, on a scale of 0 to 10. Honesty matters more than precision.</p><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:16px">Overall Mood</h3>${slrow('Mood (0 = lowest, 10 = best)','sl-mood',d.mood,'#8b9d7f')}</div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:16px">Emotions</h3>${slrow('Sadness','sl-sad',d.sadness,'#6b8caf')}${slrow('Anger / Rage','sl-ang',d.anger,'#c97b63')}${slrow('Fear / Anxiety','sl-fear',d.fear,'#a67ba6')}${slrow('Shame','sl-shame',d.shame,'#8a7f72')}${slrow('Joy','sl-joy',d.joy,'#d4b06a')}</div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:16px">Urges</h3>${slrow('Self-harm urge','sl-urge',d.selfHarmUrge,'#c97b63')}</div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:12px">Body</h3><label style="font-size:14px;font-weight:500;display:block;margin-bottom:8px">Sleep last night (hours)</label><input type="number" id="sl-sleep" step="0.5" min="0" max="24" value="${esc(d.sleepHours)}" style="width:120px"></div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:10px">Skills used today</h3><textarea id="sl-skills" rows="2" placeholder="Wise mind, opposite action, TIPP...">${esc(d.skillsUsed)}</textarea></div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:10px">A note for today</h3><textarea id="sl-note" rows="4" placeholder="Anything you want to remember...">${esc(d.note)}</textarea></div><button class="btn btn-dark" id="dsb" onclick="saveDiary()" style="margin-top:8px">Save today</button></div>`;
+}
+function saveDiary(){
+  const d=S.diaryE;
+  d.mood=+document.getElementById('sl-mood')?.value||5;d.sadness=+document.getElementById('sl-sad')?.value||0;d.anger=+document.getElementById('sl-ang')?.value||0;d.fear=+document.getElementById('sl-fear')?.value||0;d.shame=+document.getElementById('sl-shame')?.value||0;d.joy=+document.getElementById('sl-joy')?.value||0;d.selfHarmUrge=+document.getElementById('sl-urge')?.value||0;d.sleepHours=document.getElementById('sl-sleep')?.value||'';d.skillsUsed=document.getElementById('sl-skills')?.value||'';d.note=document.getElementById('sl-note')?.value||'';d.date=new Date().toISOString();
+  const tod=new Date().toDateString();S.diary=[...S.diary.filter(e=>new Date(e.date).toDateString()!==tod),{...d}];save('diary',S.diary);
+  const b=document.getElementById('dsb');if(b){b.textContent='✓ Saved';setTimeout(()=>{if(b)b.textContent='Save today'},2000)}
+}
+
+// ============ CHAIN ============
+const CF=[
+  {k:'vulnerability',l:'Vulnerability factors',h:'What was already wearing on you? Sleep, food, stress, hormones, conflict carrying over.'},
+  {k:'prompting',l:'Prompting event',h:'The moment it started. The exact thing.'},
+  {k:'thoughts',l:'Thoughts in the chain',h:'What you told yourself, link by link.'},
+  {k:'feelings',l:'Feelings & body',h:'What you felt and where in your body.'},
+  {k:'urge',l:'Urge',h:'What you wanted to do.'},
+  {k:'behavior',l:'What you actually did',h:'No judgment. Just the facts.'},
+  {k:'consequences',l:'Consequences',h:'Short term and long term. Inside you and outside.'},
+  {k:'repair',l:'Repair & next time',h:'What you can do now. What skill might fit next time.'},
+];
+function vChain(a){
+  if(S.chainHist){
+    a.innerHTML=`${hdr('Chain Analysis','goChainHistBack()',true)}<div class="wrap py"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><p class="serif" style="font-style:italic;color:var(--ink-mid)">Past analyses</p><span style="text-decoration:underline;cursor:pointer;font-size:14px;color:var(--ink-mid)" onclick="S.chainHist=false;render()">New chain</span></div>${S.chains.length===0?'<p style="color:var(--muted);text-align:center;padding:40px 0">No chains saved yet.</p>':S.chains.slice().reverse().map(c=>`<details class="card"><summary style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:500">${fdate(c.date)}</span><span style="font-size:12px;color:var(--ink-light);max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc((c.prompting||'untitled').slice(0,35))}</span></summary><div style="margin-top:14px;display:flex;flex-direction:column;gap:10px;font-size:14px">${CF.filter(f=>c[f.k]).map(f=>`<div><strong style="color:var(--ink-mid)">${esc(f.l)}</strong><br>${esc(c[f.k])}</div>`).join('')}</div></details>`).join('')}</div>`;
+    return;
+  }
+  const e=S.chainE;
+  a.innerHTML=`${hdr('Chain Analysis','home',true)}<div class="wrap py"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><p class="serif" style="font-style:italic;color:var(--ink-mid)">Trace the chain. One link at a time.</p>${S.chains.length>0?`<span style="text-decoration:underline;cursor:pointer;font-size:14px;color:var(--ink-mid);white-space:nowrap" onclick="S.chainHist=true;render()">${S.chains.length} past</span>`:''}</div>${CF.map(f=>`<div class="card"><h3 class="serif" style="font-size:18px;margin-bottom:4px">${esc(f.l)}</h3><p style="font-size:13px;font-style:italic;color:var(--ink-light);margin-bottom:10px">${esc(f.h)}</p><textarea id="c-${f.k}" rows="3">${esc(e[f.k])}</textarea></div>`).join('')}<button class="btn btn-dark" id="csb" onclick="saveChain()" style="margin-top:8px">Save chain</button></div>`;
+}
+function saveChain(){
+  CF.forEach(f=>{S.chainE[f.k]=document.getElementById('c-'+f.k)?.value||''});
+  S.chains=[...S.chains,{...S.chainE,date:new Date().toISOString(),id:Date.now()}];save('chains',S.chains);
+  S.chainE={vulnerability:'',prompting:'',thoughts:'',feelings:'',urge:'',behavior:'',consequences:'',repair:''};
+  const b=document.getElementById('csb');if(b){b.textContent='✓ Saved';setTimeout(()=>{if(b)b.textContent='Save chain'},2000)}
+}
+
+// ============ SKILLS ============
+function vSkills(a){
+  if(S.skill){
+    const sk=S.skill;
+    a.innerHTML=`${hdr(sk.name,'goSkillBack()',true)}<div class="wrap py"><p class="serif" style="font-size:18px;line-height:1.6;margin-bottom:24px">${esc(sk.desc)}</p><div class="card"><p style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Practice</p><p style="line-height:1.7;color:var(--ink-mid)">${esc(sk.practice)}</p></div><button class="btn btn-dark" style="margin-top:20px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="logSk('${sk.id}');S.skill=null;render()">${I.check} I practiced this</button></div>`;
+    return;
+  }
+  if(S.mod){
+    const mod=SK[S.mod];
+    a.innerHTML=`${hdr(mod.name,'goModBack()',true)}<div class="wrap py"><div style="display:flex;align-items:center;gap:14px;margin-bottom:24px"><div class="tile-icon" style="background:${mod.color};color:#f5f1e8;flex-shrink:0">${mIcon(S.mod)}</div><p class="serif" style="font-style:italic;color:var(--ink-mid)">${esc(mod.desc)}</p></div><div style="display:flex;flex-direction:column;gap:10px">${mod.skills.map((sk,i)=>`<button class="card" style="text-align:left;cursor:pointer;width:100%;border:none;font-family:inherit;display:flex;justify-content:space-between;align-items:center;gap:12px" onclick="setSkill('${S.mod}',${i})"><div><div class="serif" style="font-size:18px;margin-bottom:4px">${esc(sk.name)}</div><div style="font-size:13px;color:var(--ink-light);line-height:1.4">${esc(sk.desc)}</div></div>${I.chev}</button>`).join('')}</div></div>`;
+    return;
+  }
+  a.innerHTML=`${hdr('Skills','home',true)}<div class="wrap py"><p class="serif" style="font-style:italic;color:var(--ink-mid);margin-bottom:24px">Four modules. The whole architecture.</p><div class="grid2">${Object.entries(SK).map(([k,m])=>`<button class="tile" onclick="S.mod='${k}';render()"><div class="tile-icon" style="background:${m.color};color:#f5f1e8">${mIcon(k)}</div><div class="tile-label">${esc(m.name)}</div><div class="tile-desc">${esc(m.desc)}</div><div style="font-size:11px;color:var(--muted);margin-top:8px">${m.skills.length} skills</div></button>`).join('')}</div></div>`;
+}
+function logSk(id){S.skillUsage[id]=(S.skillUsage[id]||0)+1;save('skillUsage',S.skillUsage)}
+
+// ============ RAGE ============
+function vRage(a){
+  if(S.rageForm){
+    const r=S.rageE;
+    a.innerHTML=`${hdr('Rage Log','goRageBack()',true)}<div class="wrap py"><div class="card">${slrow('Intensity (0–10)','rl-int',r.intensity,'#c97b63')}<p style="font-size:12px;font-style:italic;color:var(--ink-light);margin-top:-10px">How big was the wave?</p></div>${[{k:'trigger',l:'What set it off',h:'The prompting event, in plain words.'},{k:'body',l:'Where you felt it',h:'Chest, jaw, throat, hands, stomach...'},{k:'acted',l:'What you did',h:'No judgment. The truth.'},{k:'skillTried',l:'Any skill you tried',h:'Or did not try. Both are useful to know.'},{k:'aftermath',l:'After',h:'How you feel now. What needs repair.'}].map(f=>`<div class="card"><h3 class="serif" style="font-size:17px;margin-bottom:4px">${esc(f.l)}</h3><p style="font-size:12px;font-style:italic;color:var(--ink-light);margin-bottom:8px">${esc(f.h)}</p><textarea id="re-${f.k}" rows="2">${esc(r[f.k])}</textarea></div>`).join('')}<div style="display:flex;gap:10px;margin-top:8px"><button class="btn btn-outline" onclick="S.rageForm=false;render()">Cancel</button><button class="btn btn-dark" onclick="saveRage()">Save</button></div></div>`;
+    return;
+  }
+  const items=S.rage.slice().reverse().map(r=>`<details class="card"><summary style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:13px;color:var(--ink-mid)">${fdatetime(r.date)}</span><span class="serif" style="font-size:24px;color:#c97b63">${r.intensity}/10</span></summary><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:14px">${r.trigger?`<div><strong>Trigger:</strong> ${esc(r.trigger)}</div>`:''}${r.body?`<div><strong>Body:</strong> ${esc(r.body)}</div>`:''}${r.acted?`<div><strong>Acted:</strong> ${esc(r.acted)}</div>`:''}${r.skillTried?`<div><strong>Skill tried:</strong> ${esc(r.skillTried)}</div>`:''}${r.aftermath?`<div><strong>After:</strong> ${esc(r.aftermath)}</div>`:''}</div></details>`).join('');
+  a.innerHTML=`${hdr('Rage Log','home',true)}<div class="wrap py"><p class="serif" style="font-style:italic;color:var(--ink-mid);margin-bottom:16px">Capture the wave. Patterns live here.</p><button class="btn btn-rust" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px" onclick="S.rageForm=true;render()">${I.plus} Log a rage moment</button>${items||'<p style="text-align:center;padding:40px 0;color:var(--muted)">No moments logged yet.</p>'}</div>`;
+}
+function saveRage(){
+  S.rageE.intensity=+document.getElementById('rl-int')?.value||7;
+  ['trigger','body','acted','skillTried','aftermath'].forEach(k=>{S.rageE[k]=document.getElementById('re-'+k)?.value||''});
+  S.rage=[...S.rage,{...S.rageE,date:new Date().toISOString(),id:Date.now()}];save('rage',S.rage);
+  S.rageE={intensity:7,trigger:'',body:'',acted:'',skillTried:'',aftermath:''};S.rageForm=false;render();
+}
+
+// ============ DASHBOARD ============
+function vDashboard(a){
+  const last7=S.diary.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-7);
+  const rr=S.rage.slice(-7);
+  const avg=rr.length?(rr.reduce((s,r)=>s+r.intensity,0)/rr.length).toFixed(1):null;
+  const allSk=Object.values(SK).flatMap(m=>m.skills);
+  const top=Object.entries(S.skillUsage).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([id,n])=>({...(allSk.find(s=>s.id===id)||{name:id}),n}));
+  const mBars=last7.length?last7.map(e=>`<div class="bar-col"><div class="bar" style="background:#8b9d7f;height:${(e.mood/10*100)}%"></div><div style="font-size:10px;color:var(--muted)">${new Date(e.date).getDate()}</div></div>`).join(''):'<p style="color:var(--muted)">Fill diary cards to see trends.</p>';
+  const rBars=rr.length?rr.map(r=>`<div class="bar-col"><div class="bar" style="background:#c97b63;height:${(r.intensity/10*100)}%" title="${r.intensity}/10"></div></div>`).join(''):'<p style="color:var(--muted)">No rage moments logged yet.</p>';
+  a.innerHTML=`${hdr('Patterns','home',true)}<div class="wrap py"><p class="serif" style="font-style:italic;color:var(--ink-mid);margin-bottom:24px">What is moving over time. Look gently.</p><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:16px">Mood — last 7 entries</h3><div class="bar-wrap">${mBars}</div></div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:6px">Rage moments</h3><div style="display:flex;justify-content:space-between;margin-bottom:14px"><span style="font-size:13px;color:var(--ink-light)">Total: ${S.rage.length}</span>${avg?`<span style="font-size:13px;color:var(--ink-light)">Recent avg: ${avg}/10</span>`:''}</div><div class="bar-wrap">${rBars}</div></div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:14px">Most-used skills</h3>${top.length===0?'<p style="color:var(--muted)">Skills you practice appear here.</p>':top.map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-weight:500">${esc(s.name)}</div><span class="serif" style="font-size:24px">${s.n}</span></div>`).join('')}</div></div>`;
+}
+
+// ============ SETTINGS ============
+function vSettings(a){
+  const p=S.profile;
+  a.innerHTML=`${hdr('Settings','home',false)}<div class="wrap py"><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:12px">Name</h3><input type="text" id="set-name" value="${esc(p.name)}"></div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:14px">Reminders</h3><label style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px"><span>☀️</span><span>Morning</span></div><div style="display:flex;align-items:center;gap:8px"><input type="time" id="set-mt" value="${p.reminder?.morningTime||'08:00'}" style="width:auto;padding:6px 10px"><input type="checkbox" id="set-mc" ${p.reminder?.morning?'checked':''}></div></label><label style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><span>🌙</span><span>Evening diary</span></div><div style="display:flex;align-items:center;gap:8px"><input type="time" id="set-et" value="${p.reminder?.eveningTime||'21:00'}" style="width:auto;padding:6px 10px"><input type="checkbox" id="set-ec" ${p.reminder?.evening?'checked':''}></div></label></div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:6px">Trusted contact</h3><p style="font-size:13px;color:var(--ink-light);margin-bottom:12px">Available in the crisis flow.</p><input type="text" id="set-cn" placeholder="Name" value="${esc(p.trustedContact?.name||'')}" style="margin-bottom:8px"><input type="tel" id="set-cp" placeholder="Phone" value="${esc(p.trustedContact?.phone||'')}"></div><div class="card"><h3 class="serif" style="font-size:19px;margin-bottom:6px">Marsha conversations</h3><p style="font-size:13px;color:var(--ink-light);margin-bottom:12px">Paste an Anthropic API key to enable Marsha chat. Get one free at <strong>console.anthropic.com</strong>. Stays only in your browser.</p><div style="display:flex;gap:8px"><input type="password" id="set-key" placeholder="sk-ant-..." value="${esc(p.apiKey||'')}" style="flex:1"><button class="btn btn-outline" style="width:auto;padding:8px 14px;font-size:13px;flex-shrink:0" onclick="toggleKey()">Show</button></div></div><button class="btn btn-dark" id="ssb" onclick="saveSettings()" style="margin-top:4px">Save settings</button><div class="card" style="margin-top:20px"><h3 class="serif" style="font-size:19px;margin-bottom:6px">Therapist export</h3><p style="font-size:13px;color:var(--ink-light);margin-bottom:14px">Download a plain-text file with diary cards, rage log, chain analyses, and skill use. Bring it to your next session.</p><button class="btn btn-outline" style="display:flex;align-items:center;justify-content:center;gap:8px" onclick="doExport()">${I.dl} Export to file</button></div><p style="font-size:12px;font-style:italic;text-align:center;color:var(--muted);margin-top:28px;padding:0 12px">This app is a companion, not a clinician. In real crisis, call 988 or your therapist.</p></div>`;
+}
+function toggleKey(){const i=document.getElementById('set-key'),b=document.querySelector('[onclick="toggleKey()"]');if(i){i.type=i.type==='password'?'text':'password';if(b)b.textContent=i.type==='password'?'Show':'Hide'}}
+function saveSettings(){
+  S.profile.name=document.getElementById('set-name')?.value||S.profile.name;
+  S.profile.trustedContact={name:document.getElementById('set-cn')?.value||'',phone:document.getElementById('set-cp')?.value||''};
+  S.profile.reminder={morning:!!document.getElementById('set-mc')?.checked,evening:!!document.getElementById('set-ec')?.checked,morningTime:document.getElementById('set-mt')?.value||'08:00',eveningTime:document.getElementById('set-et')?.value||'21:00'};
+  S.profile.apiKey=document.getElementById('set-key')?.value||'';
+  save('profile',S.profile);
+  const b=document.getElementById('ssb');if(b){b.textContent='✓ Saved';setTimeout(()=>{if(b)b.textContent='Save settings'},2000)}
+}
+function doExport(){
+  const allSk=Object.values(SK).flatMap(m=>m.skills);
+  const su=Object.entries(S.skillUsage).map(([id,n])=>`  - ${(allSk.find(s=>s.id===id)||{name:id}).name}: ${n} time${n!==1?'s':''}`).join('\n');
+  const line='═'.repeat(44);
+  const txt=`DBT COMPANION — THERAPIST EXPORT\nGenerated: ${new Date().toLocaleString()}\nFor: ${S.profile.name}\n\n${line}\nDIARY CARDS (${S.diary.length} entries)\n${line}\n${S.diary.map(e=>`\nDate: ${fdate(e.date)}\n  Mood: ${e.mood}/10  |  Sleep: ${e.sleepHours||'n/a'} hrs\n  Sadness: ${e.sadness}  Anger: ${e.anger}  Fear: ${e.fear}  Shame: ${e.shame}  Joy: ${e.joy}\n  Self-harm urge: ${e.selfHarmUrge}/10\n  Skills used: ${e.skillsUsed||'—'}\n  Note: ${e.note||'—'}`).join('\n')}\n\n${line}\nRAGE LOG (${S.rage.length} entries)\n${line}\n${S.rage.map(r=>`\nDate: ${fdatetime(r.date)}  |  Intensity: ${r.intensity}/10\n  Trigger: ${r.trigger||'—'}\n  Body: ${r.body||'—'}\n  Acted: ${r.acted||'—'}\n  Skill tried: ${r.skillTried||'—'}\n  Aftermath: ${r.aftermath||'—'}`).join('\n')}\n\n${line}\nCHAIN ANALYSES (${S.chains.length} entries)\n${line}\n${S.chains.map(c=>`\nDate: ${fdate(c.date)}\n  Vulnerability: ${c.vulnerability||'—'}\n  Prompting event: ${c.prompting||'—'}\n  Thoughts: ${c.thoughts||'—'}\n  Feelings: ${c.feelings||'—'}\n  Urge: ${c.urge||'—'}\n  Behavior: ${c.behavior||'—'}\n  Consequences: ${c.consequences||'—'}\n  Repair: ${c.repair||'—'}`).join('\n')}\n\n${line}\nSKILL USAGE\n${line}\n${su||'  — none logged yet —'}\n`;
+  const blob=new Blob([txt],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`dbt-export-${new Date().toISOString().slice(0,10)}.txt`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// Named back functions — called from data-nav handlers
+function goSkillBack(){S.skill=null;render()}
+function goModBack(){S.mod=null;render()}
+function goRageBack(){S.rageForm=false;render()}
+function goChainHistBack(){S.chainHist=false;render()}
+
+// ============ INIT ============
+window.addEventListener('DOMContentLoaded',()=>{
+  S.profile=load('profile',null);
+  S.diary=load('diary',[]);
+  S.rage=load('rage',[]);
+  S.skillUsage=load('skillUsage',{});
+  S.chains=load('chains',[]);
+  S.view=S.profile?.onboarded?'home':'onboarding';
+  render();
+  // Register service worker for PWA / offline support
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+});
+</script>
+</body>
+</html>
