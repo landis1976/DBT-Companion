@@ -14,7 +14,7 @@ All data is stored locally in your browser.
 Nothing leaves your device.
 
 ## Live App
-[URL will go here after deployment]
+(https://dbtcompanion.netlify.app)
 
 ## Built By
 Lando — Lawrence, KS
