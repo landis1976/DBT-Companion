@@ -18,3 +18,5 @@ Nothing leaves your device.
 
 ## Built By
 Lando — Lawrence, KS
+## Version
+1.0 — Initial release, May 2026
