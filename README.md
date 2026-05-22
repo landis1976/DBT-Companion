@@ -20,3 +20,7 @@ Nothing leaves your device.
 Lando — Lawrence, KS
 ## Version
 1.0 — Initial release, May 2026
+## Next Up
+- Avett is Awesome deployment
+- GitHub profile polish
+- Week 2 curriculum
