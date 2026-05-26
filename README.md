@@ -24,3 +24,4 @@ Lando — Lawrence, KS
 - Avett is Awesome deployment
 - GitHub profile polish
 - Week 2 curriculum
+Still learning. 
